@@ -4,6 +4,7 @@
 #include "include/common.h"
 #include "include/led-displays.h"
 #include "include/switches.h"
+#include "include/buzzer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -20,6 +21,8 @@ void app_main()
 
     setup_led_displays();
     setup_switches();
+    setup_buzzer();
+
     render_timer_display();
 
     while(1) {
@@ -31,6 +34,8 @@ void app_main()
 	}
 
 	if (milliseconds_since_last_timer_set >= START_COUNTDOWN_AFTER_MS && timerSeconds > 0) {
+	    beep_beep_beep();
+	    milliseconds_since_last_timer_set = 0;
 	    is_counting_down = 1;
 	}
 
@@ -40,6 +45,11 @@ void app_main()
 		timerSeconds--;
 		elapsed_ms_in_second = 0;
 		render_timer_display();
+	    }
+
+	    if (timerSeconds == 0) {
+		long_beep(5000);
+		is_counting_down = 0;
 	    }
 	}
 
