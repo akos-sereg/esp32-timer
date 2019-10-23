@@ -14,9 +14,9 @@ int milliseconds_since_last_timer_set = 0;
 
 void app_main()
 {
-    int cnt = 0;
-    int tick_rate_ms = 500;
+    int tick_rate_ms = 100;
     int elapsed_ms_in_second = 0;
+    int elapsed_ms_in_5seconds = 0;
 
     setup_led_displays();
     setup_switches();
@@ -44,11 +44,14 @@ void app_main()
 	}
 
 	// flash light
-	gpio_set_level(GPIO_LED, cnt % 2);
-	printf("Flash: %d\n", cnt % 2);
-
-	cnt++;
-	if (cnt == 60000) cnt = 0;
+	if (elapsed_ms_in_5seconds == 0) {
+	    gpio_set_level(GPIO_LED, 0);
+	}
+	elapsed_ms_in_5seconds += tick_rate_ms;
+	if (elapsed_ms_in_5seconds >= 5000) {
+	    gpio_set_level(GPIO_LED, 1);
+	    elapsed_ms_in_5seconds = 0;
+	}
     }
 }
 
