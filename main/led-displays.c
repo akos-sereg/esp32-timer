@@ -6,7 +6,7 @@
 #include "sdkconfig.h"
 #include "include/led-displays.h"
 #include "include/switches.h"
-#include "include/common.h"
+#include "include/timer-state.h"
 #include "include/tm1637.h"
 
 int CONTINUITY_CHECK = 0;
@@ -26,13 +26,13 @@ void render_timer_display() {
     int digit3 = 0;
     int digit4 = 0;
 
-    if (timerSeconds < 0 || timerSeconds > 5999) {
+    if (timer_seconds < 0 || timer_seconds > 5999) {
 	// 5999 seconds: 99 minutes and 59 seconds - max interval that can be displayed on tm1637
 	return;
     }
 
-    int minutes = floor(timerSeconds / 60);
-    int seconds = timerSeconds % 60;
+    int minutes = floor(timer_seconds / 60);
+    int seconds = timer_seconds % 60;
 
     if (minutes < 10) {
 	digit1 = 0;

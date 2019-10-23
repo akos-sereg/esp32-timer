@@ -1,10 +1,9 @@
 #include "include/switches.h"
 #include "include/led-displays.h"
-#include "include/common.h"
+#include "include/timer-state.h"
 
 int SWITCH_1_STATE = 0;
 int SWITCH_2_STATE = 0;
-int timerSeconds = 0;
 
 static xQueueHandle gpio_evt_queue = NULL;
 
@@ -34,10 +33,7 @@ void listen_switches(void* arg)
 		SWITCH_1_STATE = current_state;
 		if (current_state == 1) {
 		    // raising edge: up botton has just been pressed
-		    timerSeconds += INCREMENT_DECREMENT_SECONDS;
-		    printf("Increasing timer, new value: %d\n", timerSeconds);
-		    milliseconds_since_last_timer_set = 0;
-		    render_timer_display();
+		    add_timer_seconds(INCREMENT_DECREMENT_SECONDS);
 		}
 	    }
 
@@ -45,13 +41,7 @@ void listen_switches(void* arg)
 		SWITCH_2_STATE = current_state;
 		if (current_state == 1) {
 		    // raising edge: down button has just been pressed
-		    if (timerSeconds >= INCREMENT_DECREMENT_SECONDS) {
-			timerSeconds -= INCREMENT_DECREMENT_SECONDS;
-		    }
-
-		    printf("Decreasing timer, new value: %d\n", timerSeconds);
-		    milliseconds_since_last_timer_set = 0;
-		    render_timer_display();
+		    add_timer_seconds(-INCREMENT_DECREMENT_SECONDS);
 		}
 	    }
         }

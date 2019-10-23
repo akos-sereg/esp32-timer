@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "include/common.h"
+#include "include/timer-state.h"
 #include "include/led-displays.h"
 #include "include/switches.h"
 #include "include/buzzer.h"
@@ -9,9 +9,6 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "driver/gpio.h"
-
-int is_counting_down = 0;
-int milliseconds_since_last_timer_set = 0;
 
 void app_main()
 {
@@ -34,12 +31,7 @@ void app_main()
 	if (SWITCH_1_STATE && !is_counting_down) {
 	    elapsed_ms_up_pressed += tick_rate_ms;
 	    if (elapsed_ms_up_pressed > INCREMENT_DECREMENT_SPEED_UP_AFTER_MS) {
-		timerSeconds += 60;
-		if (timerSeconds > 5999) {
-		    timerSeconds = 5999;
-		}
-		milliseconds_since_last_timer_set = 0;
-		render_timer_display();
+		add_timer_seconds(60);
 	    }
 	} else {
 	    elapsed_ms_up_pressed = 0;
@@ -48,12 +40,7 @@ void app_main()
 	if (SWITCH_2_STATE && !is_counting_down) {
 	    elapsed_ms_down_pressed += tick_rate_ms;
 	    if (elapsed_ms_down_pressed > INCREMENT_DECREMENT_SPEED_UP_AFTER_MS) {
-		timerSeconds -= 60;
-		if (timerSeconds < 0) {
-		    timerSeconds = 0;
-		}
-		milliseconds_since_last_timer_set = 0;
-		render_timer_display();
+		add_timer_seconds(-60);
 	    }
 	} else {
 	    elapsed_ms_down_pressed = 0;
@@ -65,7 +52,7 @@ void app_main()
 	    milliseconds_since_last_timer_set += tick_rate_ms;
 	}
 
-	if (milliseconds_since_last_timer_set >= START_COUNTDOWN_AFTER_MS && timerSeconds > 0) {
+	if (milliseconds_since_last_timer_set >= START_COUNTDOWN_AFTER_MS && timer_seconds > 0) {
 	    beep_beep_beep(1);
 	    milliseconds_since_last_timer_set = 0;
 	    is_counting_down = 1;
@@ -73,13 +60,13 @@ void app_main()
 
 	elapsed_ms_in_second += tick_rate_ms;
 	if (is_counting_down && elapsed_ms_in_second >= 1000) {
-	    if (timerSeconds > 0) {
-		timerSeconds--;
+	    if (timer_seconds > 0) {
+		timer_seconds--;
 		elapsed_ms_in_second = 0;
 		render_timer_display();
 	    }
 
-	    if (timerSeconds == 0) {
+	    if (timer_seconds == 0) {
 		long_beep(TIME_UP_BEEP_MS);
 		is_counting_down = 0;
 		gpio_set_level(GPIO_LED, 0);
