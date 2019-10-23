@@ -4,5 +4,6 @@
 #define GPIO_LED		33
 
 extern void setup_led_displays();
+extern void render_timer_display();
 
 #endif

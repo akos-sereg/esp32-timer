@@ -21,10 +21,14 @@ void listen_switches(void* arg)
 
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
-	    // vTaskDelay(50 / portTICK_RATE_MS);
+	    vTaskDelay(50 / portTICK_RATE_MS);
+	    if (is_counting_down == 1) {
+		// user input is no longer considered - eg. we are in countdown mode, and
+		// we should not be responding on increment / decrement timer.
+		continue;
+	    }
 
 	    current_state = gpio_get_level(io_num);
-	    // printf("GPIO[%d] state: %d\n", io_num, current_state);
 
 	    if (io_num == GPIO_INPUT_IO_0 && SWITCH_1_STATE != current_state) {
 		SWITCH_1_STATE = current_state;
@@ -32,6 +36,8 @@ void listen_switches(void* arg)
 		    // raising edge: up botton has just been pressed
 		    timerSeconds += (5 * 60);
 		    printf("Increasing timer, new value: %d\n", timerSeconds);
+		    milliseconds_since_last_timer_set = 0;
+		    render_timer_display();
 		}
 	    }
 
@@ -44,6 +50,8 @@ void listen_switches(void* arg)
 		    }
 
 		    printf("Decreasing timer, new value: %d\n", timerSeconds);
+		    milliseconds_since_last_timer_set = 0;
+		    render_timer_display();
 		}
 	    }
         }
