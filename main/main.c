@@ -14,9 +14,9 @@ void app_main()
 {
     int tick_rate_ms = 100;
     int elapsed_ms_in_second = 0;
-    int elapsed_ms_in_5seconds = 0;
     int elapsed_ms_up_pressed = 0;
     int elapsed_ms_down_pressed = 0;
+    int elapsed_ms_flash = 0;
 
     setup_led_displays();
     setup_switches();
@@ -53,6 +53,7 @@ void app_main()
 	}
 
 	if (milliseconds_since_last_timer_set >= START_COUNTDOWN_AFTER_MS && timer_seconds > 0) {
+	    // start countdown
 	    beep_beep_beep(1);
 	    milliseconds_since_last_timer_set = 0;
 	    is_counting_down = 1;
@@ -60,28 +61,33 @@ void app_main()
 
 	elapsed_ms_in_second += tick_rate_ms;
 	if (is_counting_down && elapsed_ms_in_second >= 1000) {
+	    // counting down one second
 	    if (timer_seconds > 0) {
 		timer_seconds--;
 		elapsed_ms_in_second = 0;
 		render_timer_display();
 	    }
 
+	    // stop countdown
 	    if (timer_seconds == 0) {
+		gpio_set_level(GPIO_LED, 0);
 		long_beep(TIME_UP_BEEP_MS);
 		is_counting_down = 0;
-		gpio_set_level(GPIO_LED, 0);
 	    }
 	}
 
 	// flash light
 	if (is_counting_down) {
-	    if (elapsed_ms_in_5seconds == 0) {
+	    if (elapsed_ms_flash == 0) {
+		gpio_set_level(GPIO_LED, 1);
+	    }
+	    if (elapsed_ms_flash >= 100) {
 		gpio_set_level(GPIO_LED, 0);
 	    }
-	    elapsed_ms_in_5seconds += tick_rate_ms;
-	    if (elapsed_ms_in_5seconds >= 5000) {
-		gpio_set_level(GPIO_LED, 1);
-		elapsed_ms_in_5seconds = 0;
+
+	    elapsed_ms_flash += tick_rate_ms;
+	    if (elapsed_ms_flash >= 500) {
+		elapsed_ms_flash = 0;
 	    }
 	}
     }
