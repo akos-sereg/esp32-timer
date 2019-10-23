@@ -5,5 +5,6 @@
 
 extern void setup_led_displays();
 extern void render_timer_display();
+extern void erase_timer();
 
 #endif

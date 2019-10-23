@@ -34,7 +34,7 @@ void app_main()
 	}
 
 	if (milliseconds_since_last_timer_set >= START_COUNTDOWN_AFTER_MS && timerSeconds > 0) {
-	    beep_beep_beep();
+	    beep_beep_beep(1);
 	    milliseconds_since_last_timer_set = 0;
 	    is_counting_down = 1;
 	}
@@ -48,19 +48,22 @@ void app_main()
 	    }
 
 	    if (timerSeconds == 0) {
-		long_beep(5000);
+		long_beep(TIME_UP_BEEP_MS);
 		is_counting_down = 0;
+		gpio_set_level(GPIO_LED, 0);
 	    }
 	}
 
 	// flash light
-	if (elapsed_ms_in_5seconds == 0) {
-	    gpio_set_level(GPIO_LED, 0);
-	}
-	elapsed_ms_in_5seconds += tick_rate_ms;
-	if (elapsed_ms_in_5seconds >= 5000) {
-	    gpio_set_level(GPIO_LED, 1);
-	    elapsed_ms_in_5seconds = 0;
+	if (is_counting_down) {
+	    if (elapsed_ms_in_5seconds == 0) {
+		gpio_set_level(GPIO_LED, 0);
+	    }
+	    elapsed_ms_in_5seconds += tick_rate_ms;
+	    if (elapsed_ms_in_5seconds >= 5000) {
+		gpio_set_level(GPIO_LED, 1);
+		elapsed_ms_in_5seconds = 0;
+	    }
 	}
     }
 }

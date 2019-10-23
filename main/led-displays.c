@@ -55,3 +55,10 @@ void render_timer_display() {
     tm1637_set_segment_number(led, 2, digit3, false);
     tm1637_set_segment_number(led, 3, digit4, false);
 }
+
+void erase_timer() {
+    tm1637_set_segment_raw(led, 0, 0x00);
+    tm1637_set_segment_raw(led, 1, 0x00);
+    tm1637_set_segment_raw(led, 2, 0x00);
+    tm1637_set_segment_raw(led, 3, 0x00);
+}
