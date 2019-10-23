@@ -18,6 +18,8 @@ void app_main()
     int tick_rate_ms = 100;
     int elapsed_ms_in_second = 0;
     int elapsed_ms_in_5seconds = 0;
+    int elapsed_ms_up_pressed = 0;
+    int elapsed_ms_down_pressed = 0;
 
     setup_led_displays();
     setup_switches();
@@ -28,7 +30,37 @@ void app_main()
     while(1) {
         vTaskDelay(tick_rate_ms / portTICK_RATE_MS);
 
-	// manage elapsed time since timer set
+	// manage up / down buttons
+	if (SWITCH_1_STATE && !is_counting_down) {
+	    elapsed_ms_up_pressed += tick_rate_ms;
+	    if (elapsed_ms_up_pressed > INCREMENT_DECREMENT_SPEED_UP_AFTER_MS) {
+		timerSeconds += 60;
+		if (timerSeconds > 5999) {
+		    timerSeconds = 5999;
+		}
+		milliseconds_since_last_timer_set = 0;
+		render_timer_display();
+	    }
+	} else {
+	    elapsed_ms_up_pressed = 0;
+	}
+
+	if (SWITCH_2_STATE && !is_counting_down) {
+	    elapsed_ms_down_pressed += tick_rate_ms;
+	    if (elapsed_ms_down_pressed > INCREMENT_DECREMENT_SPEED_UP_AFTER_MS) {
+		timerSeconds -= 60;
+		if (timerSeconds < 0) {
+		    timerSeconds = 0;
+		}
+		milliseconds_since_last_timer_set = 0;
+		render_timer_display();
+	    }
+	} else {
+	    elapsed_ms_down_pressed = 0;
+	}
+
+	// manage countdown clock:
+	// start / stop / countdown
 	if (is_counting_down == 0) {
 	    milliseconds_since_last_timer_set += tick_rate_ms;
 	}

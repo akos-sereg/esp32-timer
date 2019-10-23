@@ -12,14 +12,14 @@ void beep_beep_beep(int hide_display_in_gaps) {
 
     for (i=0; i!=3; i++) {
 	// beep
-	gpio_set_level(GPIO_BUZZER, 1);
+	beep_on();
 	if (hide_display_in_gaps) {
 	    render_timer_display();
 	}
 	vTaskDelay(BEEP_INTERVAL_MS / portTICK_RATE_MS);
 
 	// gap
-	gpio_set_level(GPIO_BUZZER, 0);
+	beep_off();
 	if (hide_display_in_gaps) {
 	    erase_timer();
 	}
@@ -32,7 +32,17 @@ void beep_beep_beep(int hide_display_in_gaps) {
 }
 
 void long_beep(int milliseconds) {
-    gpio_set_level(GPIO_BUZZER, 1);
+    beep_on();
     vTaskDelay(milliseconds / portTICK_RATE_MS);
+    beep_off();
+}
+
+void beep_on() {
+    if (BUZZER_ENABLED) {
+	gpio_set_level(GPIO_BUZZER, 1);
+    }
+}
+
+void beep_off() {
     gpio_set_level(GPIO_BUZZER, 0);
 }
