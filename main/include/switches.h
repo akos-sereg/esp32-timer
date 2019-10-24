@@ -9,8 +9,8 @@
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 
-#define INCREMENT_DECREMENT_SECONDS			60
-#define INCREMENT_DECREMENT_SPEED_UP_AFTER_MS		1000
+#define INCREMENT_DECREMENT_SECONDS			60	/* when up / down buttons are pressed, we add this + or - seconds */
+#define INCREMENT_DECREMENT_SPEED_UP_AFTER_MS		1000	/* incrementing or decrementing timer speeds up after this amount of time */
 
 #define GPIO_INPUT_IO_0     39 /* Switch #1 */
 #define GPIO_INPUT_IO_1	    34 /* Switch #2 */

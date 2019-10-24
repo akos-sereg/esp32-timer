@@ -50,7 +50,17 @@ void render_timer_display() {
 	digit4 = seconds % 10;
     }
 
-    tm1637_set_segment_number(led, 0, digit1, false);
+    if (DISPLAY_PAD_ZERO) {
+	// example: 9 mins 12 seconds will be "9:12" instead of "09:12"
+	if (digit1 == 0) {
+	    tm1637_set_segment_raw(led, 0, 0x00);
+	} else {
+	    tm1637_set_segment_number(led, 0, digit1, false);
+	}
+    } else {
+	tm1637_set_segment_number(led, 0, digit1, false);
+    }
+
     tm1637_set_segment_number(led, 1, digit2, true);
     tm1637_set_segment_number(led, 2, digit3, false);
     tm1637_set_segment_number(led, 3, digit4, false);

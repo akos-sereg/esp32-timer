@@ -1,6 +1,7 @@
 #include "include/switches.h"
 #include "include/led-displays.h"
 #include "include/timer-state.h"
+#include "include/buzzer.h"
 
 int SWITCH_1_STATE = 0;
 int SWITCH_2_STATE = 0;
@@ -33,6 +34,7 @@ void listen_switches(void* arg)
 		SWITCH_1_STATE = current_state;
 		if (current_state == 1) {
 		    // raising edge: up botton has just been pressed
+		    long_beep(100);
 		    add_timer_seconds(INCREMENT_DECREMENT_SECONDS);
 		}
 	    }
@@ -41,6 +43,7 @@ void listen_switches(void* arg)
 		SWITCH_2_STATE = current_state;
 		if (current_state == 1) {
 		    // raising edge: down button has just been pressed
+		    long_beep(100);
 		    add_timer_seconds(-INCREMENT_DECREMENT_SECONDS);
 		}
 	    }

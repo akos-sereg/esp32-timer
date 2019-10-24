@@ -86,7 +86,7 @@ void app_main()
 	    }
 
 	    elapsed_ms_flash += tick_rate_ms;
-	    if (elapsed_ms_flash >= 500) {
+	    if (elapsed_ms_flash >= 600) {
 		elapsed_ms_flash = 0;
 	    }
 	}

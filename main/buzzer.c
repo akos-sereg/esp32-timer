@@ -16,6 +16,7 @@ void beep_beep_beep(int hide_display_in_gaps) {
 	if (hide_display_in_gaps) {
 	    render_timer_display();
 	}
+
 	vTaskDelay(BEEP_INTERVAL_MS / portTICK_RATE_MS);
 
 	// gap
@@ -23,6 +24,7 @@ void beep_beep_beep(int hide_display_in_gaps) {
 	if (hide_display_in_gaps) {
 	    erase_timer();
 	}
+
 	vTaskDelay(BEEP_GAP_INTERVAL_MS / portTICK_RATE_MS);
     }
 
