@@ -8,6 +8,8 @@ int SWITCH_2_STATE = 0;
 
 static xQueueHandle gpio_evt_queue = NULL;
 
+int64_t get_epoch_milliseconds();
+
 static void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     uint32_t gpio_num = (uint32_t) arg;
@@ -18,6 +20,7 @@ void listen_switches(void* arg)
 {
     uint32_t io_num;
     int current_state;
+    int64_t current_epoch;
 
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
@@ -43,6 +46,14 @@ void listen_switches(void* arg)
 		SWITCH_2_STATE = current_state;
 		if (current_state == 1) {
 		    // raising edge: down button has just been pressed
+
+		    current_epoch = get_epoch_milliseconds();
+		    if (current_epoch < 2000) {
+		        // in case "down" button is pressed within 2 seconds after startup, we are
+		        // in silent mode
+		        silent_mode = 1;
+		    }
+
 		    long_beep(100);
 		    add_timer_seconds(-INCREMENT_DECREMENT_SECONDS);
 		}
@@ -100,3 +111,8 @@ void setup_switches()
     gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
 }
 
+int64_t get_epoch_milliseconds() {
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+}

@@ -3,12 +3,18 @@
 #include "include/buzzer.h"
 #include "include/led-displays.h"
 
+int silent_mode = 0;
+
 void setup_buzzer() {
     gpio_set_direction(GPIO_BUZZER, GPIO_MODE_OUTPUT);
 }
 
 void beep_beep_beep(int hide_display_in_gaps) {
     int i = 0;
+
+    if (silent_mode) {
+        return;
+    }
 
     for (i=0; i!=3; i++) {
 	// beep
@@ -34,17 +40,29 @@ void beep_beep_beep(int hide_display_in_gaps) {
 }
 
 void long_beep(int milliseconds) {
+    if (silent_mode) {
+        return;
+    }
+
     beep_on();
     vTaskDelay(milliseconds / portTICK_RATE_MS);
     beep_off();
 }
 
 void beep_on() {
+    if (silent_mode) {
+        return;
+    }
+
     if (BUZZER_ENABLED) {
-	gpio_set_level(GPIO_BUZZER, 1);
+	    gpio_set_level(GPIO_BUZZER, 1);
     }
 }
 
 void beep_off() {
+    if (silent_mode) {
+        return;
+    }
+
     gpio_set_level(GPIO_BUZZER, 0);
 }
